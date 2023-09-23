@@ -42,3 +42,40 @@ class DBStorage:
         if HBNB_ENV == 'test':
             Base.metadata.drop_all(self.__engine)
 
+    def all(self, cls=None):
+         if cls is None:
+            for c in classes.values():
+                objs = self.__session.query(c).all()
+                for obj in objs:
+                    key = obj.__class__.__name__ + '.' + obj.id
+                    dct[key] = obj
+        else:
+            objs = self.__session.query(cls).all()
+            for obj in objs:
+                key = obj.__class__.__name__ + '.' + obj.id
+                dct[key] = obj
+        return dct
+
+    def new(self, obj):
+        self.__session.all(obj)
+
+    def save(self):
+        '''commit all changes of the current database session'''
+        self.__session.commit()
+
+    def delete(self, obj=None):
+        """Delete obj from the current database session."""
+        if obj is not None:
+            self.__session.delete(obj)
+
+    def reload(self):
+        """Create all tables in the database and initialize a new session."""
+        Base.metadata.create_all(self.__engine)
+        session_factory = sessionmaker(bind=self.__engine,
+                                       expire_on_commit=False)
+        Session = scoped_session(session_factory)
+        self.__session = Session()
+
+    def close(self):
+        """Close the working SQLAlchemy session."""
+        self.__session.close()
