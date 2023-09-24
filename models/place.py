@@ -2,17 +2,15 @@
 """ Place_Module_for HBNB_project """
 
 from models.amenity import Amenity
-import os
 from models.review import Review
 from models.base_model import BaseModel, Base
-from os import getenv
+from models import storage_type
 from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from sqlalchemy.sql.schema import Table
 from sqlalchemy.orm import relationship
-from models import storage_type
 
 
-if os.getenv('HBNB_TYPE_STORAGE') == 'db':
+if storage_type == 'db':
     place_amenity = Table('place_amenity', Base.metadata,
                           Column('place_id', String(60),
                                  ForeignKey('places.id'),
